@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/layout/page-header";
+
 export default function TechnicianPage() {
-  return <h1>Today</h1>;
+  return <PageHeader title="Today" />;
 }

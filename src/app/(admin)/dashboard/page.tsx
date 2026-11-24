@@ -1,3 +1,9 @@
+import type { Metadata } from "next";
+
+import { PageHeader } from "@/components/layout/page-header";
+
+export const metadata: Metadata = { title: "Dashboard | ServiceOps" };
+
 export default function DashboardPage() {
-  return <h1>Dashboard</h1>;
+  return <PageHeader title="Dashboard" />;
 }
