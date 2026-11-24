@@ -9,7 +9,7 @@ import type { JobStatus } from "./status";
 export const JOBS_PAGE_SIZE = 50;
 
 const JOB_COLUMNS =
-  "id, customer_id, technician_id, service, description, price_cents, starts_at, ends_at, status, completion_notes, customer:customers (name), technician:organization_members (full_name)";
+  "id, customer_id, technician_id, service, description, price_cents, starts_at, ends_at, status, completion_notes, customer:customers (name), technician:organization_members (full_name), invoices (id, number, status)";
 
 export type JobRow = {
   id: string;
@@ -24,6 +24,11 @@ export type JobRow = {
   completion_notes: string | null;
   customer: { name: string };
   technician: { full_name: string } | null;
+  invoices: {
+    id: string;
+    number: number;
+    status: "unpaid" | "paid" | "void";
+  }[];
 };
 
 export async function listJobs(params: JobListParams, timeZone: string) {
