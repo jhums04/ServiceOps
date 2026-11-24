@@ -22,8 +22,8 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          name: "db",
-          include: ["tests/db/**/*.test.ts"],
+          name: "integration",
+          include: ["tests/db/**/*.test.ts", "tests/payments/**/*.test.ts"],
           setupFiles: ["tests/db/setup.ts"],
           // Tests share one local database; serial runs keep reset_demo_data calls from racing.
           fileParallelism: false,

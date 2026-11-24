@@ -1,3 +1,11 @@
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+# The 2026-11-24 @react-pdf release depends on @react-pdf/hyphenate@^0.1.1, which was
+# never published. Pin the last consistent set until upstream publishes it.
+overrides:
+  "@react-pdf/font": 4.1.2
+  "@react-pdf/layout": 5.2.0
+  "@react-pdf/render": 4.7.0
+  "@react-pdf/textkit": 7.0.1
