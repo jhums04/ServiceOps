@@ -6,13 +6,14 @@ export type ActionState = {
   fieldErrors?: Partial<Record<string, string[]>>;
 };
 
-/** Optional text input: trimmed, with an empty value stored as null. */
+/** Optional text input: trimmed, with an empty or missing value stored as null. */
 export function optionalText(max: number) {
   return z
     .string()
     .trim()
     .max(max, `Use ${max} characters or fewer.`)
-    .transform((value) => (value === "" ? null : value));
+    .optional()
+    .transform((value) => value || null);
 }
 
 export function requiredText(max: number, message: string) {
