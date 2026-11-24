@@ -78,3 +78,9 @@ export async function memberIdFor(email: string): Promise<string> {
   if (error) throw error;
   return data.id;
 }
+
+/** Restores seeded data after tests that write. */
+export async function resetDemoData() {
+  const { error } = await serviceClient().rpc("reset_demo_data");
+  if (error) throw error;
+}

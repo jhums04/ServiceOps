@@ -4,7 +4,15 @@ import { defineConfig } from "vitest/config";
 const src = fileURLToPath(new URL("./src", import.meta.url));
 
 export default defineConfig({
-  resolve: { alias: { "@": src } },
+  resolve: {
+    alias: {
+      "@": src,
+      // Tests run outside a React Server Components bundler, which is what enforces this.
+      "server-only": fileURLToPath(
+        new URL("./tests/stubs/empty.ts", import.meta.url),
+      ),
+    },
+  },
   test: {
     projects: [
       {

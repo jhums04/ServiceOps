@@ -175,6 +175,13 @@ export type Database = {
             foreignKeyName: "jobs_organization_id_customer_id_fkey";
             columns: ["organization_id", "customer_id"];
             isOneToOne: false;
+            referencedRelation: "customer_summaries";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "jobs_organization_id_customer_id_fkey";
+            columns: ["organization_id", "customer_id"];
+            isOneToOne: false;
             referencedRelation: "customers";
             referencedColumns: ["organization_id", "id"];
           },
@@ -330,10 +337,42 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      customer_summaries: {
+        Row: {
+          city: string | null;
+          created_at: string;
+          email: string | null;
+          id: string;
+          name: string;
+          organization_id: string;
+          outstanding_cents: number | null;
+          phone: string | null;
+          postal_code: string | null;
+          state: string | null;
+          street: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: "customers_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Functions: {
       reset_demo_data: { Args: Record<PropertyKey, never>; Returns: undefined };
+      update_job_status: {
+        Args: {
+          p_job_id: string;
+          p_notes?: string;
+          p_status: Database["public"]["Enums"]["job_status"];
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       invoice_status: "unpaid" | "paid" | "void";
