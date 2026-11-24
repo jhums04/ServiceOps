@@ -1,3 +1,8 @@
-export default function Home() {
-  return <main className="p-6">ServiceOps</main>;
+import { redirect } from "next/navigation";
+
+import { getMember, homePathFor } from "@/lib/auth";
+
+export default async function Home() {
+  const member = await getMember();
+  redirect(homePathFor(member.role));
 }
