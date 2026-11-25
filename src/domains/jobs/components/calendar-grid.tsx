@@ -120,14 +120,17 @@ export function CalendarGrid({
               ))}
               {assignLanes(positioned.filter((item) => item.date === day)).map(
                 ({ job, start, end, lane, lanes }) => {
-                  const label = `${job.service} for ${job.customer.name}, ${formatTimeRange(job.starts_at, job.ends_at, timeZone)}, ${job.technician?.full_name ?? "unassigned"}, ${jobStatusLabel[job.status]}`;
+                  const timeRange = formatTimeRange(
+                    job.starts_at,
+                    job.ends_at,
+                    timeZone,
+                  );
                   return (
                     <button
                       key={job.id}
                       type="button"
                       onClick={() => setSelected(job)}
-                      aria-label={label}
-                      title={label}
+                      title={`${job.service} for ${job.customer.name}, ${timeRange}`}
                       className="absolute flex flex-col overflow-hidden rounded-md border bg-background px-1.5 py-1 text-left text-xs leading-tight hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       style={{
                         top: ((start - firstHour * 60) / 60) * HOUR_HEIGHT + 1,
@@ -154,6 +157,9 @@ export function CalendarGrid({
                       </span>
                       <span className="block truncate text-muted-foreground">
                         {job.customer.name}
+                      </span>
+                      <span className="sr-only">
+                        , {timeRange}, {jobStatusLabel[job.status]}
                       </span>
                     </button>
                   );

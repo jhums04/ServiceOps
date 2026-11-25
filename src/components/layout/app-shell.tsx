@@ -5,6 +5,7 @@ import type { Member } from "@/lib/auth";
 import { MemberSummary } from "./member-summary";
 import { MobileNav } from "./mobile-nav";
 import { SidebarNav } from "./sidebar-nav";
+import { SkipLink } from "./skip-link";
 
 export function AppShell({
   member,
@@ -15,6 +16,7 @@ export function AppShell({
 }) {
   return (
     <div className="min-h-svh">
+      <SkipLink />
       <aside className="fixed inset-y-0 left-0 hidden w-56 flex-col border-r border-sidebar-border bg-sidebar p-3 lg:flex">
         <p className="px-2.5 pt-1 pb-4 text-base font-semibold">ServiceOps</p>
         <SidebarNav />
@@ -28,7 +30,13 @@ export function AppShell({
         <span className="font-semibold">ServiceOps</span>
       </header>
 
-      <main className="px-4 py-6 lg:ml-56 lg:px-8">{children}</main>
+      <main
+        id="main"
+        tabIndex={-1}
+        className="px-4 py-6 outline-none lg:ml-56 lg:px-8"
+      >
+        {children}
+      </main>
     </div>
   );
 }
