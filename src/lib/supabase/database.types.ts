@@ -337,6 +337,21 @@ export type Database = {
       };
     };
     Views: {
+      activity_feed: {
+        Row: {
+          amount_cents: number | null;
+          customer_name: string | null;
+          invoice_id: string | null;
+          invoice_number: number | null;
+          job_id: string | null;
+          kind: string | null;
+          occurred_at: string | null;
+          organization_id: string | null;
+          service: string | null;
+        };
+        ComputedFields: never;
+        Relationships: [];
+      };
       customer_summaries: {
         Row: {
           city: string | null;
@@ -365,6 +380,18 @@ export type Database = {
     };
     Functions: {
       create_invoice: { Args: { p_job_id: string }; Returns: string };
+      dashboard_summary: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          completed_jobs: number;
+          outstanding_cents: number;
+          outstanding_count: number;
+          overdue_count: number;
+          payment_count: number;
+          revenue_cents: number;
+          upcoming_jobs: number;
+        }[];
+      };
       get_public_invoice: {
         Args: { p_token: string };
         Returns: {
@@ -401,6 +428,13 @@ export type Database = {
         Returns: string;
       };
       reset_demo_data: { Args: Record<PropertyKey, never>; Returns: undefined };
+      revenue_series: {
+        Args: { p_bucket: string; p_from: string; p_to: string };
+        Returns: {
+          bucket_start: string;
+          revenue_cents: number;
+        }[];
+      };
       update_job_status: {
         Args: {
           p_job_id: string;

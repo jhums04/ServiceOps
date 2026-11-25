@@ -16,6 +16,7 @@ const EXCLUSION_VIOLATION = "23P01";
 const CHECK_VIOLATION = "23514";
 const FOREIGN_KEY_VIOLATION = "23503";
 const NO_DATA_FOUND = "P0002";
+const PROGRAM_LIMIT_EXCEEDED = "54000";
 
 function revalidateJobs() {
   revalidatePath("/jobs");
@@ -57,6 +58,7 @@ function writeError(error: PostgrestError): ActionState {
   if (error.code === FOREIGN_KEY_VIOLATION) {
     return { fieldErrors: { customer_id: ["Choose a customer."] } };
   }
+  if (error.code === PROGRAM_LIMIT_EXCEEDED) return { error: error.message };
   if (error.code === CHECK_VIOLATION) {
     return { error: `${error.message}. Refresh the page and try again.` };
   }
