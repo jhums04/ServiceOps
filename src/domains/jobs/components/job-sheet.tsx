@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -44,6 +45,8 @@ import {
   toZonedTime,
 } from "@/lib/dates";
 import { centsToInput } from "@/lib/money";
+
+import { generateInvoice } from "@/domains/invoices/actions";
 
 import { cancelJob, saveJob } from "../actions";
 import type { JobFormOptions, JobRow } from "../queries";
@@ -328,6 +331,8 @@ function JobForm({
             job={job}
             onCancelled={() => onDone("Job cancelled")}
           />
+        ) : job?.status === "completed" ? (
+          <InvoiceAction job={job} />
         ) : (
           <span />
         )}
@@ -402,5 +407,43 @@ function CancelJobButton({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+function InvoiceAction({ job }: { job: JobRow }) {
+  const [pending, startTransition] = useTransition();
+  const [generated, setGenerated] = useState<{ id: string; number: number }>();
+  const invoice =
+    generated ?? job.invoices.find((candidate) => candidate.status !== "void");
+
+  if (invoice) {
+    return (
+      <Button type="button" variant="outline" asChild>
+        <Link href={`/invoices?invoice=${invoice.id}`}>
+          Invoice <span className="font-mono">{invoice.number}</span>
+        </Link>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      disabled={pending}
+      onClick={() =>
+        startTransition(async () => {
+          const result = await generateInvoice(job.id);
+          if (result.invoice) {
+            setGenerated(result.invoice);
+            toast.success(`Invoice ${result.invoice.number} created`);
+          } else {
+            toast.error(result.error);
+          }
+        })
+      }
+    >
+      Generate invoice
+    </Button>
   );
 }

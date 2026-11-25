@@ -1,5 +1,6 @@
 import { Pencil } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
@@ -149,7 +150,12 @@ export default async function CustomerPage({
                 return (
                   <TableRow key={invoice.id}>
                     <TableCell className="font-mono">
-                      {invoice.number}
+                      <Link
+                        href={`/invoices?invoice=${invoice.id}`}
+                        className="hover:underline"
+                      >
+                        {invoice.number}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       {formatDate(invoice.issued_at, timeZone)}

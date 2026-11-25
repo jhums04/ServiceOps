@@ -364,6 +364,42 @@ export type Database = {
       };
     };
     Functions: {
+      create_invoice: { Args: { p_job_id: string }; Returns: string };
+      get_public_invoice: {
+        Args: { p_token: string };
+        Returns: {
+          amount_cents: number;
+          currency: string;
+          customer_city: string;
+          customer_email: string;
+          customer_name: string;
+          customer_postal_code: string;
+          customer_state: string;
+          customer_street: string;
+          due_on: string;
+          id: string;
+          issued_at: string;
+          line_description: string;
+          number: number;
+          organization_name: string;
+          organization_time_zone: string;
+          paid_at: string;
+          status: Database["public"]["Enums"]["invoice_status"];
+        }[];
+      };
+      record_stripe_payment: {
+        Args: {
+          p_amount_cents?: number;
+          p_checkout_session_id: string;
+          p_currency?: string;
+          p_event_id: string;
+          p_event_type: string;
+          p_invoice_id: string;
+          p_payment_intent_id?: string;
+          p_payment_status: string;
+        };
+        Returns: string;
+      };
       reset_demo_data: { Args: Record<PropertyKey, never>; Returns: undefined };
       update_job_status: {
         Args: {
@@ -373,6 +409,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      void_invoice: { Args: { p_invoice_id: string }; Returns: undefined };
     };
     Enums: {
       invoice_status: "unpaid" | "paid" | "void";
