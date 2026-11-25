@@ -2,7 +2,7 @@
 
 Scheduling, invoicing, and payments for small field-service businesses: customers, jobs, technician assignments, invoices, and Stripe payments in one application.
 
-Live demo: _link added once deployed_. No sign-up required: choose "Explore as administrator" or "Explore as technician". Demo data resets hourly.
+Live demo: https://service-ops-nine.vercel.app No sign-up required: choose "Explore as administrator" or "Explore as technician". Demo data resets hourly.
 
 ![Dashboard with revenue, outstanding invoices, job counts, revenue chart, upcoming jobs, and recent activity](.github/screenshots/dashboard.png)
 
