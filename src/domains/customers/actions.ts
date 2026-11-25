@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 
 import { customerSchema } from "./schemas";
 
+const PROGRAM_LIMIT_EXCEEDED = "54000";
+
 export async function saveCustomer(
   _state: ActionState,
   formData: FormData,
@@ -32,6 +34,7 @@ export async function saveCustomer(
     const { error } = await supabase
       .from("customers")
       .insert({ ...fields, organization_id: member.organization_id });
+    if (error?.code === PROGRAM_LIMIT_EXCEEDED) return { error: error.message };
     if (error) throw error;
   }
 

@@ -35,7 +35,7 @@ export function TechnicianJobList({
         <li key={job.id}>
           <Link
             href={`/tech/jobs/${job.id}`}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
+            className="flex items-center gap-3 px-4 py-3 hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset"
           >
             <div className="min-w-0 flex-1 space-y-0.5">
               <p className="font-medium tabular-nums">

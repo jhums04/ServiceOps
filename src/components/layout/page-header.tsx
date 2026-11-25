@@ -8,7 +8,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-6 flex min-h-9 items-center justify-between gap-4">
+    <div className="mb-6 flex min-h-9 flex-wrap items-center justify-between gap-x-4 gap-y-3">
       <h1 className="text-xl font-semibold">{title}</h1>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>
