@@ -435,6 +435,10 @@ export type Database = {
           revenue_cents: number;
         }[];
       };
+      set_demo_password: {
+        Args: { p_email: string; p_password: string };
+        Returns: undefined;
+      };
       update_job_status: {
         Args: {
           p_job_id: string;

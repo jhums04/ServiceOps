@@ -39,13 +39,13 @@ export function isAuthorizedReset(header: string | null) {
 }
 
 /**
- * Restores the demo auth users, then regenerates all demo business data.
+ * Ensures the demo auth users exist, then regenerates all demo business data.
  *
- * A visitor signed in as a demo account can change its password through the Auth API,
- * which would lock everyone else out; the two public demo logins get their passwords
- * set back on every reset. Email changes need confirmation from the old, fictional
- * address, so they cannot complete. The other accounts never sign in on the hosted
- * demo: they are created with a random password if missing and otherwise left alone.
+ * Visitors cannot change demo credentials: a trigger on auth.users rejects it. The two
+ * public demo logins still have their passwords set from the environment here, through
+ * a service-role-only function, so rotating a password only takes an environment
+ * change. The other accounts never sign in on the hosted demo; they are created with
+ * a random password if missing.
  */
 export async function resetDemo() {
   const env = resetEnvSchema.parse(process.env);
@@ -59,24 +59,23 @@ export async function resetDemo() {
     perPage: 1000,
   });
   if (error) throw error;
-  const existing = new Map(data.users.map((user) => [user.email, user.id]));
+  const existing = new Set(data.users.map((user) => user.email));
 
   for (const email of DEMO_EMAILS) {
-    const userId = existing.get(email);
     const password = loginPasswords.get(email);
-    if (userId && password) {
-      const { error: updateError } = await service.auth.admin.updateUserById(
-        userId,
-        { password, email_confirm: true },
-      );
-      if (updateError) throw updateError;
-    } else if (!userId) {
+    if (!existing.has(email)) {
       const { error: createError } = await service.auth.admin.createUser({
         email,
         password: password ?? randomBytes(32).toString("hex"),
         email_confirm: true,
       });
       if (createError) throw createError;
+    } else if (password) {
+      const { error: passwordError } = await service.rpc("set_demo_password", {
+        p_email: email,
+        p_password: password,
+      });
+      if (passwordError) throw passwordError;
     }
   }
 

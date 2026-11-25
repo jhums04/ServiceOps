@@ -33,8 +33,63 @@ async function customerCount() {
   return count;
 }
 
+async function canSignIn(email: string, password: string) {
+  const { error } = await anonClient().auth.signInWithPassword({
+    email,
+    password,
+  });
+  return error === null;
+}
+
 beforeAll(resetDemoData);
-afterAll(resetDemoData);
+afterAll(async () => {
+  await service.rpc("set_demo_password", {
+    p_email: users.alex,
+    p_password: PASSWORD,
+  });
+  await resetDemoData();
+});
+
+describe("demo account credentials", () => {
+  it("cannot be changed by a signed-in visitor", async () => {
+    const technician = await signInAs(users.alex);
+
+    const passwordChange = await technician.auth.updateUser({
+      password: "changed-by-a-visitor",
+    });
+    const emailChange = await technician.auth.updateUser({
+      email: "visitor@example.net",
+    });
+
+    expect(passwordChange.error).not.toBeNull();
+    expect(emailChange.error).not.toBeNull();
+    expect(await canSignIn(users.alex, PASSWORD)).toBe(true);
+    expect(await canSignIn(users.alex, "changed-by-a-visitor")).toBe(false);
+    const { data } = await service.auth.admin.listUsers();
+    const alex = data.users.find((user) => user.email === users.alex);
+    expect(alex?.new_email).toBeFalsy();
+  });
+
+  it("cannot be changed through the admin API either", async () => {
+    const { data } = await service.auth.admin.listUsers();
+    const admin = data.users.find((user) => user.email === users.fairviewAdmin);
+    const { error } = await service.auth.admin.updateUserById(admin?.id ?? "", {
+      password: "changed-through-admin-api",
+    });
+    expect(error).not.toBeNull();
+    expect(await canSignIn(users.fairviewAdmin, PASSWORD)).toBe(true);
+  });
+
+  it("can only be set by the service role", async () => {
+    const technician = await signInAs(users.alex);
+    const { error } = await technician.rpc("set_demo_password", {
+      p_email: users.alex,
+      p_password: "a-password-a-visitor-wants",
+    });
+    expect(error).not.toBeNull();
+    expect(await canSignIn(users.alex, PASSWORD)).toBe(true);
+  });
+});
 
 describe("POST /api/demo/reset", () => {
   it("rejects a missing or wrong secret without touching data", async () => {
@@ -56,26 +111,18 @@ describe("POST /api/demo/reset", () => {
     expect(await customerCount()).toBe(before);
   });
 
-  it("regenerates demo data and restores a demo password a visitor changed", async () => {
-    const technician = await signInAs(users.alex);
-    const { error: changeError } = await technician.auth.updateUser({
-      password: "changed-by-a-visitor",
+  it("regenerates demo data and makes the configured demo password authoritative", async () => {
+    const { error: rotateError } = await service.rpc("set_demo_password", {
+      p_email: users.alex,
+      p_password: "a-previous-demo-password",
     });
-    expect(changeError).toBeNull();
-    const locked = await anonClient().auth.signInWithPassword({
-      email: users.alex,
-      password: PASSWORD,
-    });
-    expect(locked.error).not.toBeNull();
+    expect(rotateError).toBeNull();
+    expect(await canSignIn(users.alex, PASSWORD)).toBe(false);
 
     const response = await reset(`Bearer ${secret}`);
 
     expect(response.status).toBe(200);
     expect(await customerCount()).toBe(12);
-    const restored = await anonClient().auth.signInWithPassword({
-      email: users.alex,
-      password: PASSWORD,
-    });
-    expect(restored.error).toBeNull();
+    expect(await canSignIn(users.alex, PASSWORD)).toBe(true);
   });
 });
