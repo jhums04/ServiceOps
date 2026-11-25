@@ -50,7 +50,7 @@ pnpm dev
 In a second terminal, forward webhooks and copy the printed signing secret into `STRIPE_WEBHOOK_SECRET`:
 
 ```
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+stripe listen --events checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed --forward-to localhost:3000/api/stripe/webhook
 ```
 
 ### Environment variables
